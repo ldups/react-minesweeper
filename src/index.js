@@ -1,11 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+
 import './index.css';
 
 const GameStates = Object.freeze({
-    PLAYING:   Symbol("playing"),
-    WON:  Symbol("won"),
+    PLAYING: Symbol("playing"),
+    WON: Symbol("won"),
     LOST: Symbol("lost")
+});
+
+const Levels = Object.freeze({
+    EASY: Symbol("easy"),
+    HARD: Symbol("hard"),
+    IMPOS: Symbol("impossible")
 });
 
 function Square(props){
@@ -48,11 +55,50 @@ function RevealButton(props){
     );
 }
 
+function NewGameButton(props){
+    let difficulty = "Easy";
+    if (props.i === 1){
+        difficulty = "Hard";
+    }
+    else if (props.i === 2){
+        difficulty = "Impossible";
+    }
+    return (
+        <button className = "newGame" onClick={props.onClick}>{difficulty}</button>
+    );
+}
+
 class Board extends React.Component {
     constructor(props) {
         super(props);
-        let dimension = this.props.dimension;
+        let buildResult = this.buildBoard(this.props.dimension);
+        let squareArray = buildResult[0];
+        let mineCount = buildResult[1];
+        let mineDistArray = buildResult[2];
 
+        this.state = {
+            squares: squareArray,
+            mineCount: mineCount,
+            masterArr: mineDistArray,
+            gameState: GameStates.PLAYING,
+        };
+    }
+
+    configureState(dimension) {
+        let buildResult = this.buildBoard(dimension);
+        let squareArray = buildResult[0];
+        let mineCount = buildResult[1];
+        let mineDistArray = buildResult[2];
+
+        this.setState({
+            squares: squareArray,
+            mineCount: mineCount,
+            masterArr: mineDistArray,
+            gameState: GameStates.PLAYING,
+        });
+    }
+
+    buildBoard(dimension){
         let squareArray = new Array(dimension);
         for (let i = 0; i < squareArray.length; i++) {
             squareArray[i] = new Array(dimension);
@@ -74,9 +120,6 @@ class Board extends React.Component {
                 mineArray[i][j] = mine;
             }
         }
-        
-        console.log(mineArray);
-
         let mineDistArray = new Array(dimension);
         for (let i = 0; i < mineDistArray.length; i++) {
             mineDistArray[i] = new Array(dimension);
@@ -90,13 +133,10 @@ class Board extends React.Component {
             }
         }
 
-        this.state = {
-            squares: squareArray,
-            mineCount: mineCount,
-            masterArr: mineDistArray,
-            gameState: GameStates.PLAYING,
-        }
+        return [squareArray, mineCount, mineDistArray]
     }
+
+    
 
     assignMines(numMines, dimension){
         let mineLocations = new Array(numMines);
@@ -205,8 +245,16 @@ class Board extends React.Component {
         );
     }
 
+    componentDidUpdate(prevProps){
+        if (this.props.dimension !== prevProps.dimension){
+            this.configureState(this.props.dimension);
+        }
+    }
+
+
     render() {
         var self=this
+
         let squareList = this.state.squares.map(function(row, rowIndex){
             let renderedRow = row.map( function(column, columnIndex) { 
                 return self.renderSquare(rowIndex,columnIndex,);
@@ -230,7 +278,6 @@ class Board extends React.Component {
 
         return (
             <div>
-                <div className='title' >Mine Sweeper</div>
                 <div className='status'>Status: {status}</div>
                 <div className='mineCount'>{mineDisplay}</div>
                 <div>{revealButton}</div>
@@ -329,13 +376,68 @@ function calcMineNum(i,j,mineArray){
 }
 
 class Game extends React.Component {
+    constructor(props){
+        super(props);
+        this.state ={
+            difficulty: Levels.EASY,
+        }
+    }
+
+    renderNewGameButton(i) {
+        return (
+            <NewGameButton
+                key={i}
+                onClick={() => this.handleClickNewGame(i)}
+                i={i}
+            />
+        );
+    }
+
+    renderBoard(dimension){
+        return (
+            <Board
+                dimension={dimension}
+            />
+        )
+    }
+
+    handleClickNewGame(i){
+        let chosenDiff = Levels.EASY;
+        if (i === 1){
+            chosenDiff = Levels.HARD;
+        }
+        else if (i === 2){
+            chosenDiff = Levels.IMPOS;
+        }
+
+        this.setState({
+            difficulty: chosenDiff,
+        });
+    }
+
     render() {
+        var self=this
+        let dimension = 8;
+        if (this.state.difficulty === Levels.HARD){
+            dimension = 12;
+        }
+        else if (this.state.difficulty === Levels.IMPOS){
+            dimension = 20;
+        }
+
+        let buttonList = [];
+        for (let i=0; i<3; i++){
+            buttonList.push(self.renderNewGameButton(i));
+        }
+
+        let board = this.renderBoard(dimension)
+
         return (
             <div className='game'>
                 <div className='gameBoard'>
-                    <Board
-                        dimension={8}
-                    />
+                    <div className='title' >Mine Sweeper</div>
+                    <div className='difButtons' >New Game: {buttonList}</div>
+                    {board}
                 </div>
             </div>
         )
