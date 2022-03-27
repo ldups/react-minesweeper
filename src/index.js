@@ -81,6 +81,7 @@ class Board extends React.Component {
             mineCount: mineCount,
             masterArr: mineDistArray,
             gameState: GameStates.PLAYING,
+            gameNum: this.props.gameNum,
         };
     }
 
@@ -246,7 +247,7 @@ class Board extends React.Component {
     }
 
     componentDidUpdate(prevProps){
-        if (this.props.dimension !== prevProps.dimension){
+        if (this.props.gameNum !== prevProps.gameNum){
             this.configureState(this.props.dimension);
         }
     }
@@ -380,6 +381,7 @@ class Game extends React.Component {
         super(props);
         this.state ={
             difficulty: Levels.EASY,
+            gameNum: 0,
         }
     }
 
@@ -393,10 +395,11 @@ class Game extends React.Component {
         );
     }
 
-    renderBoard(dimension){
+    renderBoard(dimension, gameNum){
         return (
             <Board
                 dimension={dimension}
+                gameNum={gameNum}
             />
         )
     }
@@ -412,6 +415,7 @@ class Game extends React.Component {
 
         this.setState({
             difficulty: chosenDiff,
+            gameNum: this.state.gameNum +1,
         });
     }
 
@@ -430,7 +434,7 @@ class Game extends React.Component {
             buttonList.push(self.renderNewGameButton(i));
         }
 
-        let board = this.renderBoard(dimension)
+        let board = this.renderBoard(dimension, this.state.gameNum)
 
         return (
             <div className='game'>
