@@ -441,7 +441,7 @@ class Game extends React.Component {
                 <div className='gameBoard'>
                     <div className='title' >Mine Sweeper</div>
                     <div className='difButtons' >New Game: {buttonList}</div>
-                    {board}
+                    <div>{board}</div>
                 </div>
             </div>
         )
