@@ -439,9 +439,14 @@ class Game extends React.Component {
         return (
             <div className='game'>
                 <div className='gameBoard'>
-                    <div className='title' >Mine Sweeper</div>
-                    <div className='difButtons' >New Game: {buttonList}</div>
-                    <div>{board}</div>
+                    <div className= "title-info">
+                        <div className='title' >Mine Sweeper</div>
+                        <div className='difButtons'>
+                            New Game:
+                            <div>{buttonList}</div>
+                        </div>
+                    </div> 
+                    <div>{board}</div>     
                 </div>
             </div>
         )
