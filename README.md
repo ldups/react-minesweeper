@@ -1,6 +1,6 @@
 # React Minesweeper
 
-I created this project to learn more about React. The project is deployed on [GitHub Pages](https://ldups.github.io/react-minesweeper/).
+I created this project to learn more about React. The project is deployed on GitHub Pages- try it [here](https://ldups.github.io/react-minesweeper/)!
 
 ## Resources Used
 ### React Tutorial
